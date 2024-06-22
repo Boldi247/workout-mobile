@@ -21,8 +21,8 @@ export default function ExerciseListItem({ item }: iExerciseListItemProps) {
       <Pressable style={styles.exerciseContainer}>
         <Text style={styles.exerciseName}>{item.name}</Text>
         <Text style={styles.exerciseSubtitle}>
-          <Text style={styles.subValue}>{item.muscle}</Text> |{" "}
-          <Text style={styles.subValue}>{item.equipment}</Text>
+          <Text style={styles.subValue}>{item.muscle.replace(/_/g, " ")}</Text>{" "}
+          | <Text style={styles.subValue}>{item.equipment}</Text>
         </Text>
       </Pressable>
     </Link>

@@ -13,7 +13,6 @@ import { iExercise } from "../components/ExerciseListItem";
 export default function ExerciseDetailsScreen() {
   const params = useLocalSearchParams();
 
-  //create a const string which modifies params to be a string, replacing spaces with a '_' and using all lowercase
   const exerciseName = params.name?.toString().replace(/ /g, "_").toLowerCase();
   console.log(exerciseName);
 
