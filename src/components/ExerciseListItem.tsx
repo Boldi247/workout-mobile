@@ -2,7 +2,7 @@ import React from "react";
 import { Text, Pressable, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 
-interface iExercise {
+export interface iExercise {
   name: string;
   type: string;
   muscle: string;

@@ -1,43 +1,81 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
 import exercises from "../../assets/data/exercises.json";
+import { iExercise } from "../components/ExerciseListItem";
 
 export default function ExerciseDetailsScreen() {
   const params = useLocalSearchParams();
-  const exercise = exercises.find((item) => item.name === params.name);
 
-  if (!exercise) return <Text>Exercise not found!</Text>;
+  //create a const string which modifies params to be a string, replacing spaces with a '_' and using all lowercase
+  const exerciseName = params.name?.toString().replace(/ /g, "_").toLowerCase();
+  console.log(exerciseName);
+
+  const [selectedExercise, setSelectedExercise] = useState<iExercise>();
+  const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setFetchLoading(true);
+    fetch(`${process.env.APININJAS_BASEURL}?name=${exerciseName}`, {
+      method: "GET",
+      headers: {
+        "X-Api-Key": `${process.env.APININJAS_KEY}`,
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log(data[0]);
+        setSelectedExercise(data[0]);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setFetchLoading(false));
+  }, []);
 
   const [instructionsExpanded, setInstructionsExpanded] =
     useState<boolean>(false);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Stack.Screen options={{ title: exercise.name }} />
+      <Stack.Screen options={{ title: params.name?.toString() }} />
 
-      <View style={styles.panel}>
-        <Text style={styles.exerciseName}>{exercise.name}</Text>
-        <Text style={styles.exerciseSubtitle}>
-          <Text style={styles.subValue}>{exercise.muscle}</Text> |{" "}
-          <Text style={styles.subValue}>{exercise.equipment}</Text>
-        </Text>
-      </View>
+      {fetchLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        selectedExercise && (
+          <>
+            <View style={styles.panel}>
+              <Text style={styles.exerciseName}>{selectedExercise.name}</Text>
+              <Text style={styles.exerciseSubtitle}>
+                <Text style={styles.subValue}>{selectedExercise.muscle}</Text> |{" "}
+                <Text style={styles.subValue}>
+                  {selectedExercise.equipment}
+                </Text>
+              </Text>
+            </View>
 
-      <View style={styles.panel}>
-        <Text
-          style={styles.instructions}
-          numberOfLines={instructionsExpanded ? 0 : 3}
-        >
-          {exercise.instructions}
-        </Text>
-        <Text
-          style={styles.seeMore}
-          onPress={() => setInstructionsExpanded(!instructionsExpanded)}
-        >
-          {instructionsExpanded ? "See less" : "See more"}
-        </Text>
-      </View>
+            <View style={styles.panel}>
+              <Text
+                style={styles.instructions}
+                numberOfLines={instructionsExpanded ? 0 : 3}
+              >
+                {selectedExercise.instructions}
+              </Text>
+              <Text
+                style={styles.seeMore}
+                onPress={() => setInstructionsExpanded(!instructionsExpanded)}
+              >
+                {instructionsExpanded ? "See less" : "See more"}
+              </Text>
+            </View>
+          </>
+        )
+      )}
     </ScrollView>
   );
 }
