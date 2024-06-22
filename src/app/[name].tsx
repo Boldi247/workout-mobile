@@ -56,6 +56,17 @@ export default function ExerciseDetailsScreen() {
                   {selectedExercise.equipment}
                 </Text>
               </Text>
+              <Text
+                style={
+                  selectedExercise.difficulty === "beginner"
+                    ? { color: "green" }
+                    : selectedExercise.difficulty === "intermediate"
+                    ? { color: "orange" }
+                    : { color: "red" }
+                }
+              >
+                {selectedExercise.difficulty}
+              </Text>
             </View>
 
             <View style={styles.panel}>
